@@ -1,4 +1,5 @@
 import 'package:calendar/features/home/presentation/pages/widgets/e_widget.dart';
+import 'package:calendar/services/event_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -162,7 +163,10 @@ class _HomePageState extends State<HomePage> {
                               onTap: () {
                                 context.read<CalendarBloc>().add(ChangeDateEvent(day));
                               },
-                              child: DayButton(isToday: isToday, isSelectedDay: isSelectedDay, day: day),
+                              child: BlocProvider(
+                                create: (context) => CalendarBloc(EventService.instance),
+                                child: DayButton(isToday: isToday, isSelectedDay: isSelectedDay, day: day),
+                              ),
                             );
                           },
                         ),
@@ -267,11 +271,6 @@ class _DayButtonState extends State<DayButton> {
     return BlocBuilder<CalendarBloc, CalendarState>(
       builder: (context, state) {
         final events = state.eventModels
-            .where((event) =>
-        event.eventStartTime != null &&
-            event.eventStartTime!.year == widget.day.year &&
-            event.eventStartTime!.month == widget.day.month &&
-            event.eventStartTime!.day == widget.day.day)
             .toList();
 
         return Container(
@@ -317,7 +316,6 @@ class _DayButtonState extends State<DayButton> {
     );
   }
 }
-
 
 
 final List<String> monthNames = [
